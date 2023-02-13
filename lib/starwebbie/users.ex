@@ -60,12 +60,16 @@ defmodule Starwebbie.Users do
       from(u in User, where: u.username == ^username)
       |> Repo.one()
 
-    case Argon2.verify_pass(password, user.password) do
-      true -> user
-      false -> nil
-    end
+      verify_pass(user, password)
   end
 
+  def verify_pass(nil, _password), do: {:error, "user not found"}
+  def verify_pass(user, password) do
+    case Argon2.verify_pass(password, Map.get(user, :password)) do
+      true -> {:ok, user}
+      false -> {:error, :user_not_found}
+    end
+  end
   @doc """
   Updates a users.
 
