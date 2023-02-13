@@ -169,6 +169,12 @@ defmodule Starwebbie.Items do
     |> Repo.update()
   end
 
+  def update_model(%{id: id} = e_model) do
+    model = get_model!(id)
+
+    update_model(model, e_model)
+  end
+
   @doc """
   Deletes a model.
 
