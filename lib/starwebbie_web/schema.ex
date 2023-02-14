@@ -8,6 +8,8 @@ defmodule StarwebbieWeb.Schema do
   import_types(StarwebbieWeb.Contexts.Model)
 
   query do
+    import_fields(:model_queries)
+
     field :hello, :string do
       arg(:name, :string)
 
@@ -48,7 +50,6 @@ defmodule StarwebbieWeb.Schema do
       arg(:password, :string)
 
       resolve(fn _parent, %{username: username, password: password}, _context ->
-
         case Starwebbie.Users.check_auth(username, password) do
           {:ok, user} ->
             {:ok, token, _claims} = StarwebbieWeb.Guardian.encode_and_sign(user)
