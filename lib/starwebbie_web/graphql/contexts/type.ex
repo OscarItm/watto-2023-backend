@@ -8,7 +8,7 @@ defmodule StarwebbieWeb.Contexts.Type do
 
   object :type_queries do
     @desc "fetch a list of types"
-    field :type_list, list_of(:type) do
+    field :type_list, list_of(non_null(:type)) do
       resolve(fn _parent, _args, _context ->
         {:ok, Starwebbie.Items.list_types()}
       end)

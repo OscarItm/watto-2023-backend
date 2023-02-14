@@ -13,6 +13,7 @@ defmodule StarwebbieWeb.Context do
     Absinthe.Plug.put_options(conn, context: context)
   end
 
+  @spec build_context(Plug.Conn.t()) :: %{optional(:current_user) => any}
   @doc """
   Return the current user context based on the authorization header
   """

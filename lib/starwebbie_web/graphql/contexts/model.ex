@@ -8,7 +8,7 @@ defmodule StarwebbieWeb.Contexts.Model do
 
   object :model_queries do
     @desc "fetches a list of models"
-    field :model_list, list_of(:model) do
+    field :model_list, list_of(non_null(:model)) do
       resolve(fn _parent, _args, _context ->
         {:ok, Starwebbie.Items.list_models()}
       end)

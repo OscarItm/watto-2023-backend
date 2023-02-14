@@ -3,7 +3,7 @@ defmodule StarwebbieWeb.Models do
 
   object :user do
     field :id, non_null(:id)
-    field :name, :string
+    field :name, non_null(:string)
     field :username, :string
     field :inserted_at, :naive_datetime
     field :updated_at, :naive_datetime
@@ -33,8 +33,15 @@ defmodule StarwebbieWeb.Models do
   object :item do
     field :id, non_null(:id)
     field :name, :string
-    field :model_id, :integer
-    field :type_id, :integer
+    field :model, non_null(:model)
+    field :type, non_null(:type)
+
+    field :price, :float do
+      resolve(fn parent, _args, _context ->
+        {:ok, parent.model.multiplier * parent.type.index_price}
+      end)
+    end
+
     field :inserted_at, :naive_datetime
     field :updated_at, :naive_datetime
   end
