@@ -13,7 +13,7 @@ defmodule StarwebbieWeb.Router do
     plug StarwebbieWeb.Context
   end
 
-  scope "/api" do
+  scope "/" do
     pipe_through :graphql
 
     forward "/graphql", Absinthe.Plug, schema: StarwebbieWeb.Schema

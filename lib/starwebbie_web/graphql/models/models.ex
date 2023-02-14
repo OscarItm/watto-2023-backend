@@ -19,4 +19,12 @@ defmodule StarwebbieWeb.Models do
     field :name, :string
     field :index_price, :integer
   end
+  
+  object :model do
+    field :id, non_null(:id)
+    field :name, :string
+    field :inserted_at, :naive_datetime
+    field :updated_at, :naive_datetime
+  end
+
 end

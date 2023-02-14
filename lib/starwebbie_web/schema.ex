@@ -3,6 +3,7 @@ defmodule StarwebbieWeb.Schema do
   import AbsintheErrorPayload.Payload
 
   import_types(StarwebbieWeb.Models)
+
   import_types(StarwebbieWeb.Contexts.Type)
   import_types(Absinthe.Type.Custom)
   import_types(AbsintheErrorPayload.ValidationMessageTypes)
@@ -10,6 +11,13 @@ defmodule StarwebbieWeb.Schema do
 
   query do
     import_fields(:type_queries)
+
+  import_types(Absinthe.Type.Custom)
+  import_types(AbsintheErrorPayload.ValidationMessageTypes)
+  import_types(StarwebbieWeb.Contexts.Model)
+
+  query do
+    import_fields(:model_queries)
 
     field :hello, :string do
       arg(:name, :string)
@@ -25,6 +33,7 @@ defmodule StarwebbieWeb.Schema do
 
   mutation do
     import_fields(:type_mutations)
+    import_fields(:model_mutations)
 
     field :signup, :signup_payload do
       arg(:username, :string)
