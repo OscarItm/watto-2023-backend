@@ -7,7 +7,7 @@ defmodule Starwebbie.Users.User do
     field :password, :string
     field :username, :string
     has_many :items, Starwebbie.Items.Item
-    field :credits, :integer
+    field :credits, :float
 
     timestamps()
   end

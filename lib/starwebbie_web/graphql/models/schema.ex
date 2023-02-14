@@ -3,6 +3,7 @@ defmodule StarwebbieWeb.Schema do
   import AbsintheErrorPayload.Payload
 
   import_types(StarwebbieWeb.Models)
+  import_types(StarwebbieWeb.Contexts.Type)
   import_types(Absinthe.Type.Custom)
   import_types(AbsintheErrorPayload.ValidationMessageTypes)
 
@@ -20,6 +21,7 @@ defmodule StarwebbieWeb.Schema do
   payload_object(:signin_payload, :user_auth)
 
   mutation do
+    import_fields(:type_mutations)
     field :signup, :signup_payload do
       arg(:username, :string)
       arg(:password, :string)
