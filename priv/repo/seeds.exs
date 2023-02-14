@@ -11,26 +11,39 @@
 # and so on) as they will fail if something goes wrong.
 
 alias Starwebbie.Items
-{:ok, model1} = Items.create_model(%{name: "nimbus17", multiplier: :rand.normal()})
-
-{:ok, odel2} = Items.create_model(%{name: "nimbus69", multiplier: :rand.normal()})
-
-{:ok, odel3} = Items.create_model(%{name: "nimbus420", multiplier: :rand.normal()})
-
-
-{:ok, ype1} = Items.create_type(%{index_price: 1, name: "crystal"})
-
-{:ok, ype2} = Items.create_type(%{index_price: 2, name: "hilt"})
-
-{:ok, ype3} = Items.create_type(%{index_price: 3, name: "etellerandet"})
-
-
 alias Starwebbie.Users
-{:ok, ser1} = Users.create_users(%{username: "watto69", password: "1234", credits: 101})
 
+type_names = ~w[crystal_vibrator hilt crystal power_core]
+model_names = ~w[gilded golden royal regal silvered enchanted embossed]
+rand_number_f = fn -> :rand.uniform() end
+rand_number_i = fn -> (:rand.uniform() * 100) |> trunc() end
 
-item1 = Items.create_item(%{name: "wattos item", user_id: ser1.id, type_id: ype1.id, model_id: model1.id})
-item1 = Items.create_item(%{name: "wattos item", user_id: ser1.id, type_id: ype2.id, model_id: odel2.id})
-item1 = Items.create_item(%{name: "wattos item", user_id: ser1.id, type_id: ype3.id, model_id: odel3.id})
+types =
+  type_names
+  |> Enum.map(fn name ->
+    {:ok, type} = Items.create_type(%{name: name, index_price: rand_number_f.()})
+    type
+  end)
 
-dbg(item1)
+models =
+  model_names
+  |> Enum.map(fn name ->
+    {:ok, model} = Items.create_model(%{name: name, multiplier: rand_number_i.()})
+    model
+  end)
+
+{:ok, user} =
+  Users.create_users(%{
+    username: "dark_saber_dealer",
+    password: "notwatto"
+  })
+
+items =
+  for model <- models, type <- types do
+    Items.create_item(%{
+      name: "#{model.name} #{type.name}",
+      model_id: model.id,
+      type_id: type.id,
+      owner_id: user.id
+    })
+  end
