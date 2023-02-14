@@ -21,14 +21,14 @@ rand_number_i = fn -> (:rand.uniform() * 100) |> trunc() end
 types =
   type_names
   |> Enum.map(fn name ->
-    {:ok, type} = Items.create_type(%{name: name, index_price: rand_number_f.()})
+    {:ok, type} = Items.create_type(%{name: name, index_price: rand_number_i.()})
     type
   end)
 
 models =
   model_names
   |> Enum.map(fn name ->
-    {:ok, model} = Items.create_model(%{name: name, multiplier: rand_number_i.()})
+    {:ok, model} = Items.create_model(%{name: name, multiplier: rand_number_f.()})
     model
   end)
 

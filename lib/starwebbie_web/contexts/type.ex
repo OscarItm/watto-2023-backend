@@ -58,7 +58,6 @@ defmodule StarwebbieWeb.Contexts.Type do
     end
   end
 
-  # test comment
   defp update_type(_parent, args, _context) do
     Starwebbie.Items.update_type(args)
   end
