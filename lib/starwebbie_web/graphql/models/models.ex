@@ -21,4 +21,11 @@ defmodule StarwebbieWeb.Models do
     field :updated_at, :naive_datetime
   end
 
+  object :item do
+    field :id, non_null(:id)
+    field :name, :string
+    field :model_id, :integer
+    field :inserted_at, :naive_datetime
+    field :updated_at, :naive_datetime
+  end
 end
