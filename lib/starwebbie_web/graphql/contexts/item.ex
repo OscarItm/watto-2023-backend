@@ -8,18 +8,21 @@ defmodule StarwebbieWeb.Contexts.Item do
 
   object :item_queries do
     @desc "fetches a list of items"
-    field :item_list, list_of(:item) do
+    field :item_list, list_of(non_null(:item)) do
       resolve(fn _parent, _args, _context ->
         {:ok, Starwebbie.Items.list_items()}
       end)
     end
 
     @desc "fetch an item by id"
-    field :item_by_id, :item do
+    field :item_by_id, non_null(:item) do
       arg(:id, :integer)
 
       resolve(fn _parent, %{id: id}, _context ->
-        {:ok, Starwebbie.Items.get_item!(id)}
+        case Starwebbie.Items.get_item(id) do
+          nil -> {:error, "Item not found"}
+          item -> {:ok, item}
+        end
       end)
     end
   end
@@ -36,8 +39,9 @@ defmodule StarwebbieWeb.Contexts.Item do
 
     @desc "create a new item"
     field :item_create, :create_item_payload do
-      arg(:name, :string)
-      arg(:model_id, :integer)
+      arg(:name, non_null(:string))
+      arg(:model_id, non_null(:integer))
+      arg(:type_id, non_null(:integer))
 
       middleware(StarwebbieWeb.Authentication)
       resolve(&create_item/3)
