@@ -39,6 +39,7 @@ defmodule StarwebbieWeb.Contexts.Item do
       arg(:name, :string)
       arg(:model_id, :integer)
 
+      middleware(StarwebbieWeb.Authentication)
       resolve(&create_item/3)
       middleware(&build_payload/2)
     end
