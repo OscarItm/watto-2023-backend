@@ -38,18 +38,26 @@ defmodule StarwebbieWeb.Contexts.Type do
       arg(:id, :id)
 
       resolve(fn _parent, %{id: id}, _context ->
-        {:ok, Starwebbie.Items.get_type!(id)}
+        {:ok, Starwebbie.Items.get_type(id)}
       end)
     end
 
     @desc "updates a type"
     field :type_update, :type_payload do
-      arg(:id, :integer)
+      arg(:id, :id)
       arg(:name, :string)
       arg(:index_price, :integer)
 
+      type = Starwebbie.Items.get_type(args.id)
+
       resolve(fn _parent, args, _context ->
-        Starwebbie.Items.change_type(args)
+        case type do
+          nil ->
+            {:error, "type not found"}
+
+          type ->
+            {:ok, Starwebbie.Items.update_type(type, args)}
+        end
       end)
 
       middleware(&build_payload/2)
