@@ -35,7 +35,7 @@ defmodule Starwebbie.Items do
       ** (Ecto.NoResultsError)
 
   """
-  def get_type(id), do: Repo.get(Type, id)
+  def get_type!(id), do: Repo.get(Type, id)
 
   @doc """
   Creates a type.
@@ -71,6 +71,12 @@ defmodule Starwebbie.Items do
     type
     |> Type.changeset(attrs)
     |> Repo.update()
+  end
+
+  def update_type(%{id: id} = e_type) do
+    type = get_type!(id)
+
+    update_type(type, e_type)
   end
 
   @doc """
@@ -167,6 +173,12 @@ defmodule Starwebbie.Items do
     model
     |> Model.changeset(attrs)
     |> Repo.update()
+  end
+
+  def update_model(%{id: id} = e_model) do
+    model = get_model!(id)
+
+    update_model(model, e_model)
   end
 
   @doc """

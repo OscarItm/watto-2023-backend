@@ -13,4 +13,10 @@ defmodule StarwebbieWeb.Models do
     field :token, :string
     field :user, :user
   end
+
+  object :type do
+    field :id, non_null(:id)
+    field :name, :string
+    field :index_price, :integer
+  end
 end
