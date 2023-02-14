@@ -8,15 +8,12 @@ defmodule StarwebbieWeb.Schema do
   import_types(Absinthe.Type.Custom)
   import_types(AbsintheErrorPayload.ValidationMessageTypes)
   import_types(StarwebbieWeb.Contexts.Type)
-
-  query do
-    import_fields(:type_queries)
-
   import_types(Absinthe.Type.Custom)
   import_types(AbsintheErrorPayload.ValidationMessageTypes)
   import_types(StarwebbieWeb.Contexts.Model)
 
   query do
+    import_fields(:type_queries)
     import_fields(:model_queries)
 
     field :hello, :string do
