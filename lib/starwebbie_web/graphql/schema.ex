@@ -27,15 +27,15 @@ defmodule StarwebbieWeb.Schema do
     end
   end
 
-  payload_object(:signup_payload, :user_auth)
-  payload_object(:signin_payload, :user_auth)
+  payload_object(:user_auth_payload, :user_auth)
+  payload_object(:user_payload, :user)
 
   mutation do
     import_fields(:type_mutations)
     import_fields(:model_mutations)
     import_fields(:item_mutations)
 
-    field :signup, :signup_payload do
+    field :signup, :user_auth_payload do
       arg(:username, :string)
       arg(:password, :string)
 
@@ -55,7 +55,7 @@ defmodule StarwebbieWeb.Schema do
       middleware(&build_payload/2)
     end
 
-    field :signin, :signin_payload do
+    field :signin, :user_auth_payload do
       arg(:username, :string)
       arg(:password, :string)
 
@@ -72,5 +72,18 @@ defmodule StarwebbieWeb.Schema do
 
       middleware(&build_payload/2)
     end
+
+    @desc "updates credits for a user"
+    field :user_credits_update, :user_payload do
+      arg(:user_id, :integer)
+      arg(:credits, :float)
+
+      resolve(&update_user/3)
+      middleware(&build_payload/2)
+    end
+  end
+
+  defp update_user(_parent, args, _context) do
+    Starwebbie.Users.update_user(args)
   end
 end
