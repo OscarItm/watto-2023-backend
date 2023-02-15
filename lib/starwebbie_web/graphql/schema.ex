@@ -13,8 +13,6 @@ defmodule StarwebbieWeb.Schema do
   import_types(StarwebbieWeb.Contexts.Model)
   import_types(StarwebbieWeb.Contexts.Item)
 
-  payload_object(:me_payload, :user)
-
   query do
     import_fields(:type_queries)
     import_fields(:model_queries)
@@ -28,14 +26,12 @@ defmodule StarwebbieWeb.Schema do
       end)
     end
 
-    field :me, :me_payload do
+    field :me, :user do
       middleware(StarwebbieWeb.Authentication)
 
       resolve(fn _parent, _args, %{context: %{current_user: user}} ->
         {:ok, user}
       end)
-
-      middleware(&build_payload/2)
     end
   end
 
