@@ -29,17 +29,13 @@ defmodule StarwebbieWeb.Schema do
     end
 
     field :me, :me_payload do
-      arg(:token, non_null(:string))
+      middleware(StarwebbieWeb.Authentication)
 
-      resolve(fn _parent, %{token: token}, _context ->
-        case StarwebbieWeb.Guardian.decode_and_verify(token) do
-          {:ok, claims} ->
-            {:ok, claims["sub"]}
-
-          {:error, _} ->
-            {:error, "failed to login"}
-        end
+      resolve(fn _parent, _args, %{context: %{current_user: user}} ->
+        {:ok, user}
       end)
+
+      middleware(&build_payload/2)
     end
   end
 
