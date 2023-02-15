@@ -60,16 +60,18 @@ defmodule Starwebbie.Users do
       from(u in User, where: u.username == ^username)
       |> Repo.one()
 
-      verify_pass(user, password)
+    verify_pass(user, password)
   end
 
   def verify_pass(nil, _password), do: {:error, "user not found"}
+
   def verify_pass(user, password) do
     case Argon2.verify_pass(password, Map.get(user, :password)) do
       true -> {:ok, user}
       false -> {:error, :user_not_found}
     end
   end
+
   @doc """
   Updates a users.
 
@@ -82,10 +84,23 @@ defmodule Starwebbie.Users do
       {:error, %Ecto.Changeset{}}
 
   """
+
   def update_users(%User{} = users, attrs) do
     users
     |> User.changeset(attrs)
     |> Repo.update()
+  end
+
+  def update_users(%{id: id} = e_user) do
+    user = get_users!(id)
+
+    update_users(user, e_user)
+  end
+
+  def update_credits(user_id, credits) do
+    user = get_users!(user_id)
+
+    update_users(user, %{credits: credits})
   end
 
   @doc """
