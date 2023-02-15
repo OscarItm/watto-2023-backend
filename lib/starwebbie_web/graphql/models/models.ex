@@ -10,7 +10,7 @@ defmodule StarwebbieWeb.Models do
   end
 
   object :user_auth do
-    field :token, :string
+    field :token, non_null(:string)
     field :user, :user
   end
 

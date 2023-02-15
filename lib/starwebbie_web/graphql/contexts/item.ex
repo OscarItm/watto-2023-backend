@@ -8,7 +8,10 @@ defmodule StarwebbieWeb.Contexts.Item do
 
   object :item_queries do
     @desc "fetches a list of items"
+
     field :item_list, list_of(non_null(:item)) do
+      middleware(StarwebbieWeb.Authentication)
+
       resolve(fn _parent, _args, _context ->
         {:ok, Starwebbie.Items.list_items()}
       end)
@@ -17,6 +20,7 @@ defmodule StarwebbieWeb.Contexts.Item do
     @desc "fetch an item by id"
     field :item_by_id, non_null(:item) do
       arg(:id, :integer)
+      middleware(StarwebbieWeb.Authentication)
 
       resolve(fn _parent, %{id: id}, _context ->
         case Starwebbie.Items.get_item(id) do
