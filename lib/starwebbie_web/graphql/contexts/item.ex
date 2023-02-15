@@ -20,12 +20,30 @@ defmodule StarwebbieWeb.Contexts.Item do
     @desc "fetch an item by id"
     field :item_by_id, non_null(:item) do
       arg(:id, :integer)
+
       middleware(StarwebbieWeb.Authentication)
 
       resolve(fn _parent, %{id: id}, _context ->
         case Starwebbie.Items.get_item(id) do
           nil -> {:error, "Item not found"}
           item -> {:ok, item}
+        end
+      end)
+    end
+
+    @desc "find items belonging to a user"
+    field :items_by_user_id, list_of(non_null(:item)) do
+      arg(:user_id, :integer)
+
+      # middleware(StarwebbieWeb.Authentication)
+
+      resolve(fn _parent, %{user_id: user_id}, _context ->
+        dbg(user_id)
+        dbg(Starwebbie.Items.list_items())
+
+        case Starwebbie.Items.list_items() do
+          items -> {:ok, Enum.filter(items, fn item -> item.user_id == user_id end) |> dbg}
+          nil -> {:error, "Item not found"}
         end
       end)
     end
