@@ -13,6 +13,8 @@ defmodule StarwebbieWeb.Schema do
   import_types(StarwebbieWeb.Contexts.Model)
   import_types(StarwebbieWeb.Contexts.Item)
 
+  payload_object(:me_payload, :user)
+
   query do
     import_fields(:type_queries)
     import_fields(:model_queries)
@@ -23,6 +25,20 @@ defmodule StarwebbieWeb.Schema do
 
       resolve(fn %{name: name}, _ ->
         {:ok, "Hello #{name}"}
+      end)
+    end
+
+    field :me, :me_payload do
+      arg(:token, non_null(:string))
+
+      resolve(fn _parent, %{token: token}, _context ->
+        case StarwebbieWeb.Guardian.decode_and_verify(token) do
+          {:ok, claims} ->
+            {:ok, claims["sub"]}
+
+          {:error, _} ->
+            {:error, "failed to login"}
+        end
       end)
     end
   end
