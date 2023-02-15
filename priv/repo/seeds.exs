@@ -34,6 +34,7 @@ models =
 
 {:ok, user} =
   Users.create_users(%{
+    name: "Gelatto",
     username: "dark_saber_dealer",
     password: "notwatto"
   })
