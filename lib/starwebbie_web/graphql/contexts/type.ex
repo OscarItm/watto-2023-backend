@@ -16,7 +16,7 @@ defmodule StarwebbieWeb.Contexts.Type do
 
     @desc "fetch a type by id"
     field :type_by_id, :type do
-      arg(:id, :id)
+      arg(:id, :integer)
 
       resolve(fn _parent, %{id: id}, _context ->
         {:ok, Starwebbie.Items.get_type!(id)}
