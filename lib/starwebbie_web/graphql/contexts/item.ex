@@ -54,6 +54,7 @@ defmodule StarwebbieWeb.Contexts.Item do
     field :item_update, :update_item_payload do
       arg(:name, :string)
       arg(:id, :integer)
+      arg(:user_id, :integer)
 
       resolve(&update_item/3)
       middleware(&build_payload/2)
@@ -64,6 +65,7 @@ defmodule StarwebbieWeb.Contexts.Item do
       arg(:name, non_null(:string))
       arg(:model_id, non_null(:integer))
       arg(:type_id, non_null(:integer))
+      arg(:user_id, non_null(:integer))
 
       middleware(StarwebbieWeb.Authentication)
       resolve(&create_item/3)
