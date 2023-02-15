@@ -28,7 +28,7 @@ defmodule StarwebbieWeb.Schema do
   end
 
   payload_object(:user_auth_payload, :user_auth)
-  payload_object(:user_payload, :user)
+  payload_object(:user_credit_update_payload, :user)
 
   mutation do
     import_fields(:type_mutations)
@@ -74,16 +74,21 @@ defmodule StarwebbieWeb.Schema do
     end
 
     @desc "updates credits for a user"
-    field :user_credits_update, :user_payload do
+    field :user_credits_update, :user_credit_update_payload do
       arg(:user_id, :integer)
       arg(:credits, :float)
 
-      resolve(&update_user/3)
+      resolve(fn _parent, %{user_id: user_id, credits: credits}, _context ->
+        case Starwebbie.Users.update_credits(user_id, credits) do
+          {:ok, user} ->
+            {:ok, user}
+
+          {:error, _} ->
+            {:error, "failed to update credits"}
+        end
+      end)
+
       middleware(&build_payload/2)
     end
-  end
-
-  defp update_user(_parent, args, _context) do
-    Starwebbie.Users.update_user(args)
   end
 end

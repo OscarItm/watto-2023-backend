@@ -91,10 +91,16 @@ defmodule Starwebbie.Users do
     |> Repo.update()
   end
 
-  def update_user(%{id: id} = e_user) do
+  def update_users(%{id: id} = e_user) do
     user = get_users!(id)
 
     update_users(user, e_user)
+  end
+
+  def update_credits(user_id, credits) do
+    user = get_users!(user_id)
+
+    update_users(user, %{credits: credits})
   end
 
   @doc """
