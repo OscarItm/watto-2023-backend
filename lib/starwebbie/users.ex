@@ -5,7 +5,7 @@ defmodule Starwebbie.Users do
 
   import Ecto.Query, warn: false
   alias Starwebbie.Repo
-
+  alias Starwebbie.Items.Item
   alias Starwebbie.Users.User
 
   @doc """
@@ -136,32 +136,25 @@ defmodule Starwebbie.Users do
         :check_credits,
         fn _, _ ->
           if buyer.credits >= price do
-            {:ok, buyer}
+            {:ok, :ok}
           else
             {:error, "not enough credits"}
           end
         end
       )
-      |> Ecto.Multi.run(
+      |> Ecto.Multi.update(
         :update_credits_seller,
-        fn _, _ ->
-          update_credits(seller.id, price)
-        end
+        seller |> User.changeset(%{credits: seller.credits + price})
       )
-      |> Ecto.Multi.run(
+      |> Ecto.Multi.update(
         :update_credits_buyer,
-        fn _, _ ->
-          update_credits(buyer.id, negative_price)
-        end
+        buyer |> User.changeset(%{credits: buyer.credits + negative_price})
       )
-      |> Ecto.Multi.run(
+      |> Ecto.Multi.update(
         :move_Item,
-        fn _, _ ->
-          Starwebbie.Items.update_item(item, %{user_id: buyer.id})
-        end
+        item |> Item.changeset(%{user_id: buyer.id})
       )
       |> Repo.transaction()
-      |> dbg()
     else
       {:error, "you can't buy your own item"}
     end
