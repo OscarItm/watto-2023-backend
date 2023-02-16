@@ -126,9 +126,17 @@ defmodule StarwebbieWeb.Schema do
                 seller ->
                   seller = seller
 
+                  # buy the item
                   case Starwebbie.Users.buy_item(buyer, seller, itemToChange) do
                     {:ok, result} ->
-                      {:ok, %{buyer: result.ok.buyer, seller: seller, item: itemToChange}}
+                      dbg(result)
+
+                      {:ok,
+                       %{
+                         buyer: result.update_credits_buyer,
+                         seller: result.update_credits_seller,
+                         item: itemToChange
+                       }}
 
                     {:error, _} ->
                       {:error, "You already own that item"}

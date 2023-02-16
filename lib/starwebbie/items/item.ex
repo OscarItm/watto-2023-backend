@@ -14,7 +14,7 @@ defmodule Starwebbie.Items.Item do
   @doc false
   def changeset(item, attrs) do
     item
-    |> cast(attrs, [:name, :user_id, :model, :type])
+    |> cast(attrs, [:name, :user_id, :model_id, :type_id])
     |> validate_required([:name])
   end
 end
