@@ -36,7 +36,8 @@ models =
   Users.create_users(%{
     name: "Gelatto",
     username: "dark_saber_dealer",
-    password: "notwatto"
+    password: "notwatto",
+    credits: 1_000_000
   })
 
 items =
