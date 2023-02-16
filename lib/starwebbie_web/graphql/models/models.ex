@@ -5,7 +5,7 @@ defmodule StarwebbieWeb.Models do
     field :id, non_null(:id)
     field :name, :string
     field :username, non_null(:string)
-    field :credits, :float
+    field :credits, non_null(:float)
     field :inserted_at, :naive_datetime
     field :updated_at, :naive_datetime
   end
@@ -18,7 +18,7 @@ defmodule StarwebbieWeb.Models do
   object :type do
     field :id, non_null(:id)
     field :name, :string
-    field :index_price, :integer
+    field :index_price, non_null(:integer)
     field :inserted_at, :naive_datetime
     field :updated_at, :naive_datetime
   end
@@ -26,7 +26,7 @@ defmodule StarwebbieWeb.Models do
   object :model do
     field :id, non_null(:id)
     field :name, :string
-    field :multiplier, :float
+    field :multiplier, non_null(:float)
     field :inserted_at, :naive_datetime
     field :updated_at, :naive_datetime
   end

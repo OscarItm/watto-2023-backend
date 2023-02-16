@@ -38,10 +38,7 @@ defmodule StarwebbieWeb.Contexts.Item do
       # middleware(StarwebbieWeb.Authentication)
 
       resolve(fn _parent, %{user_id: user_id}, _context ->
-        case Starwebbie.Items.list_items(user_id: user_id) do
-          items -> {:ok, items}
-          nil -> {:error, "Item not found"}
-        end
+        {:ok, Starwebbie.Items.list_items_filtered(user_id: user_id)}
       end)
     end
   end
