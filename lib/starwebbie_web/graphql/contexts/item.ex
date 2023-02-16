@@ -38,11 +38,8 @@ defmodule StarwebbieWeb.Contexts.Item do
       # middleware(StarwebbieWeb.Authentication)
 
       resolve(fn _parent, %{user_id: user_id}, _context ->
-        dbg(user_id)
-        dbg(Starwebbie.Items.list_items())
-
-        case Starwebbie.Items.list_items() do
-          items -> {:ok, Enum.filter(items, fn item -> item.user_id == user_id end) |> dbg}
+        case Starwebbie.Items.list_items(user_id: user_id) do
+          items -> {:ok, items}
           nil -> {:error, "Item not found"}
         end
       end)

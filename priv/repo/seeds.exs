@@ -45,6 +45,6 @@ items =
       name: "#{model.name} #{type.name}",
       model_id: model.id,
       type_id: type.id,
-      owner_id: user.id
+      user_id: user.id
     })
   end

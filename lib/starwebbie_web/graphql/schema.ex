@@ -36,7 +36,14 @@ defmodule StarwebbieWeb.Schema do
   end
 
   payload_object(:user_auth_payload, :user_auth)
-  payload_object(:user_credit_update_payload, :user)
+  payload_object(:user_payload, :user)
+  payload_object(:transaction_payload, :transaction)
+
+  object :transaction do
+    field :buyer, :user
+    field :seller, :user
+    field :item, :item
+  end
 
   mutation do
     import_fields(:type_mutations)
@@ -48,8 +55,6 @@ defmodule StarwebbieWeb.Schema do
       arg(:password, :string)
 
       resolve(fn _parent, %{username: username, password: password}, %{context: ctx} ->
-        dbg(ctx)
-
         case Starwebbie.Users.create_users(%{username: username, password: password}) do
           {:ok, user} ->
             {:ok, token, _claims} = StarwebbieWeb.Guardian.encode_and_sign(user)
@@ -82,7 +87,7 @@ defmodule StarwebbieWeb.Schema do
     end
 
     @desc "updates credits for a user"
-    field :user_credits_update, :user_credit_update_payload do
+    field :user_credits_update, :user_payload do
       arg(:user_id, :integer)
       arg(:credits, :float)
 
@@ -93,6 +98,29 @@ defmodule StarwebbieWeb.Schema do
 
           {:error, _} ->
             {:error, "failed to update credits"}
+        end
+      end)
+
+      middleware(&build_payload/2)
+    end
+
+    @desc "Buy an item from a user"
+    field :user_buy, :transaction_payload do
+      arg(:item_id, :integer)
+
+      resolve(fn _parent, %{item_id: item_id}, %{context: %{current_user: buyer}} ->
+        itemToChange = Starwebbie.Items.get_item(item_id) |> dbg()
+        seller = Starwebbie.Users.get_users!(itemToChange.user_id) |> dbg()
+
+        case Starwebbie.Users.buy_item(buyer, seller, itemToChange) do
+          {:ok, _} ->
+            {:ok, %{buyer: buyer, seller: seller, item: itemToChange}}
+
+          {:error, _} ->
+            {:error, "You already own that item"}
+
+          {:error, _, _, _} ->
+            {:error, "failed to buy item"}
         end
       end)
 

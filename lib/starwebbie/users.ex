@@ -91,12 +91,6 @@ defmodule Starwebbie.Users do
     |> Repo.update()
   end
 
-  def update_users(%{id: id} = e_user) do
-    user = get_users!(id)
-
-    update_users(user, e_user)
-  end
-
   def update_credits(user_id, credits) do
     user = get_users!(user_id)
 
@@ -130,5 +124,49 @@ defmodule Starwebbie.Users do
   """
   def change_users(%User{} = users, attrs \\ %{}) do
     User.changeset(users, attrs)
+  end
+
+  def buy_item(buyer, seller, item) do
+    price = item.type.index_price * item.model.multiplier
+
+    if buyer.id != seller.id do
+      Ecto.Multi.new()
+      |> Ecto.Multi.run(
+        :check_credits,
+        fn _, _ ->
+          if buyer.credits >= price do
+            {:ok, buyer}
+          else
+            {:error, "not enough credits"}
+          end
+        end
+      )
+      |> Ecto.Multi.run(
+        :update_credits_seller,
+        fn _, _ ->
+          seller_credits = seller.credits + price
+
+          update_credits(seller.id, seller_credits)
+        end
+      )
+      |> Ecto.Multi.run(
+        :update_credits_buyer,
+        fn _, _ ->
+          buyer_credits = buyer.credits - price
+
+          update_credits(buyer.id, buyer_credits)
+        end
+      )
+      |> Ecto.Multi.run(
+        :move_Item,
+        fn _, _ ->
+          Starwebbie.Items.update_item(item, %{user_id: buyer.id})
+        end
+      )
+      |> Repo.transaction()
+      |> dbg()
+    else
+      {:error, "you can't buy your own item"}
+    end
   end
 end

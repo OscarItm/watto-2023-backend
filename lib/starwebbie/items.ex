@@ -221,6 +221,14 @@ defmodule Starwebbie.Items do
       [%Item{}, ...]
 
   """
+  def list_items(user_id: user_id) do
+    from(i in Item,
+      where: i.user_id == ^user_id,
+      preload: [:type, :model]
+    )
+    |> Repo.all()
+  end
+
   def list_items do
     Repo.all(Item) |> Repo.preload([:type, :model])
   end
@@ -239,7 +247,7 @@ defmodule Starwebbie.Items do
       ** (Ecto.NoResultsError)
 
   """
-  def get_item(id), do: Repo.get(Item, id) |> Repo.preload([:type, :model])
+  def get_item(id), do: Repo.get(Item, id) |> Repo.preload([:type, :model, :user])
 
   @doc """
   Creates a item.
