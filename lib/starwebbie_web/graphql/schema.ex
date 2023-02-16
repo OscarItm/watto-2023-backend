@@ -108,20 +108,36 @@ defmodule StarwebbieWeb.Schema do
     field :user_buy, :transaction_payload do
       arg(:item_id, :integer)
 
-      resolve(fn _parent, %{item_id: item_id}, %{context: %{current_user: buyer}} ->
-        itemToChange = Starwebbie.Items.get_item(item_id) |> dbg()
-        seller = Starwebbie.Users.get_users!(itemToChange.user_id) |> dbg()
+      resolve(fn
+        _parent, %{item_id: item_id}, %{context: %{current_user: buyer}} ->
+          # check if the item exists
+          case(Starwebbie.Items.get_item(item_id)) do
+            nil ->
+              {:error, "Item not found"}
 
-        case Starwebbie.Users.buy_item(buyer, seller, itemToChange) do
-          {:ok, _} ->
-            {:ok, %{buyer: buyer, seller: seller, item: itemToChange}}
+            item ->
+              itemToChange = item
 
-          {:error, _} ->
-            {:error, "You already own that item"}
+              # check if the user exists
+              case Starwebbie.Users.get_users!(itemToChange.user_id) do
+                nil ->
+                  {:error, "seller not found"}
 
-          {:error, _, _, _} ->
-            {:error, "failed to buy item"}
-        end
+                seller ->
+                  seller = seller
+
+                  case Starwebbie.Users.buy_item(buyer, seller, itemToChange) do
+                    {:ok, _} ->
+                      {:ok, %{buyer: buyer, seller: seller, item: itemToChange}}
+
+                    {:error, _} ->
+                      {:error, "You already own that item"}
+
+                    {:error, _, _, _} ->
+                      {:error, "failed to buy item"}
+                  end
+              end
+          end
       end)
 
       middleware(&build_payload/2)
