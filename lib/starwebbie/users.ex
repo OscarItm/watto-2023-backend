@@ -93,8 +93,8 @@ defmodule Starwebbie.Users do
 
   def update_credits(user_id, credits) do
     user = get_users!(user_id)
-
-    update_users(user, %{credits: credits})
+    creditsToSet = user.credits + credits
+    update_users(user, %{credits: creditsToSet})
   end
 
   @doc """
@@ -128,6 +128,7 @@ defmodule Starwebbie.Users do
 
   def buy_item(buyer, seller, item) do
     price = item.type.index_price * item.model.multiplier
+    negative_price = -price
 
     if buyer.id != seller.id do
       Ecto.Multi.new()
@@ -144,17 +145,13 @@ defmodule Starwebbie.Users do
       |> Ecto.Multi.run(
         :update_credits_seller,
         fn _, _ ->
-          seller_credits = seller.credits + price
-
-          update_credits(seller.id, seller_credits)
+          update_credits(seller.id, price)
         end
       )
       |> Ecto.Multi.run(
         :update_credits_buyer,
         fn _, _ ->
-          buyer_credits = buyer.credits - price
-
-          update_credits(buyer.id, buyer_credits)
+          update_credits(buyer.id, negative_price)
         end
       )
       |> Ecto.Multi.run(
