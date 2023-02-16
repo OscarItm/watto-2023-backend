@@ -109,45 +109,45 @@ defmodule StarwebbieWeb.Schema do
     @desc "Buy an item from a user"
     field :user_buy, :transaction_payload do
       arg(:item_id, :integer)
+      middleware(StarwebbieWeb.Authentication)
 
-      resolve(fn
-        _parent, %{item_id: item_id}, %{context: %{current_user: buyer}} ->
-          # check if the item exists
-          case(Starwebbie.Items.get_item(item_id)) do
-            nil ->
-              {:error, "Item not found"}
+      resolve(fn _parent, %{item_id: item_id}, %{context: %{current_user: buyer}} ->
+        # check if the item exists
+        case(Starwebbie.Items.get_item(item_id)) do
+          nil ->
+            {:error, "Item not found"}
 
-            item ->
-              itemToChange = item
+          item ->
+            itemToChange = item
 
-              # check if the user exists
-              case Starwebbie.Users.get_users!(itemToChange.user_id) do
-                nil ->
-                  {:error, "seller not found"}
+            # check if the user exists
+            case Starwebbie.Users.get_users!(itemToChange.user_id) do
+              nil ->
+                {:error, "seller not found"}
 
-                seller ->
-                  seller = seller
+              seller ->
+                seller = seller
 
-                  # buy the item
-                  case Starwebbie.Users.buy_item(buyer, seller, itemToChange) do
-                    {:ok, result} ->
-                      dbg(result)
+                # buy the item
+                case Starwebbie.Users.buy_item(buyer, seller, itemToChange) do
+                  {:ok, result} ->
+                    dbg(result)
 
-                      {:ok,
-                       %{
-                         buyer: result.update_credits_buyer,
-                         seller: result.update_credits_seller,
-                         item: itemToChange
-                       }}
+                    {:ok,
+                     %{
+                       buyer: result.update_credits_buyer,
+                       seller: result.update_credits_seller,
+                       item: itemToChange
+                     }}
 
-                    {:error, _} ->
-                      {:error, "You already own that item"}
+                  {:error, _} ->
+                    {:error, "You already own that item"}
 
-                    {:error, _, _, _} ->
-                      {:error, "failed to buy item"}
-                  end
-              end
-          end
+                  {:error, _, _, _} ->
+                    {:error, "failed to buy item"}
+                end
+            end
+        end
       end)
 
       middleware(&build_payload/2)

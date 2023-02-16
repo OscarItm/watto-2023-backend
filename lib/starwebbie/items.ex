@@ -221,7 +221,7 @@ defmodule Starwebbie.Items do
       [%Item{}, ...]
 
   """
-  def list_items(user_id: user_id) do
+  def list_items_filtered(user_id: user_id) do
     from(i in Item,
       where: i.user_id == ^user_id,
       preload: [:type, :model]
