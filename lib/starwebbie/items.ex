@@ -224,7 +224,7 @@ defmodule Starwebbie.Items do
   def list_items_by_user_id(user_id: user_id) do
     from(i in Item,
       where: i.user_id == ^user_id,
-      preload: [:type, :model]
+      preload: [:type, :model, :user]
     )
     |> Repo.all()
   end
@@ -238,7 +238,7 @@ defmodule Starwebbie.Items do
   end
 
   def list_items do
-    Repo.all(Item)
+    Repo.all(Item) |> Repo.preload([:type, :model, :user])
   end
 
   @doc """
