@@ -232,7 +232,7 @@ defmodule Starwebbie.Items do
   def list_items_except_from_user_id(user_id: user_id) do
     from(i in Item,
       where: i.user_id != ^user_id,
-      preload: [:type, :model]
+      preload: [:type, :model, :user]
     )
     |> Repo.all()
   end
