@@ -38,7 +38,18 @@ defmodule StarwebbieWeb.Contexts.Item do
       # middleware(StarwebbieWeb.Authentication)
 
       resolve(fn _parent, %{user_id: user_id}, _context ->
-        {:ok, Starwebbie.Items.list_items_filtered(user_id: user_id)}
+        {:ok, Starwebbie.Items.list_items_by_user_id(user_id: user_id)}
+      end)
+    end
+
+    @desc "find all other items than those belonging to a user"
+    field :items_except_from_user_id, list_of(non_null(:item)) do
+      arg(:user_id, :integer)
+
+      # middleware(StarwebbieWeb.Authentication)
+
+      resolve(fn _parent, %{user_id: user_id}, _context ->
+        {:ok, Starwebbie.Items.list_items_except_from_user_id(user_id: user_id)}
       end)
     end
   end
