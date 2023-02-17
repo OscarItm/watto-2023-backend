@@ -37,6 +37,7 @@ defmodule StarwebbieWeb.Models do
     field :model, non_null(:model)
     field :type, non_null(:type)
     field :user, non_null(:user)
+    field :for_sale, :boolean
 
     field :price, :float do
       resolve(fn parent, _args, _context ->

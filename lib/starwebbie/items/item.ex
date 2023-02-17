@@ -4,6 +4,7 @@ defmodule Starwebbie.Items.Item do
 
   schema "items" do
     field :name, :string
+    field :for_sale, :boolean, default: true
     belongs_to :user, Starwebbie.Users.User
     belongs_to :type, Starwebbie.Items.Type
     belongs_to :model, Starwebbie.Items.Model
@@ -14,7 +15,7 @@ defmodule Starwebbie.Items.Item do
   @doc false
   def changeset(item, attrs) do
     item
-    |> cast(attrs, [:name, :user_id, :model_id, :type_id])
+    |> cast(attrs, [:name, :user_id, :model_id, :type_id, :for_sale])
     |> validate_required([:name])
   end
 end

@@ -38,13 +38,14 @@ defmodule StarwebbieWeb.Contexts.Item do
       middleware(StarwebbieWeb.Authentication)
 
       resolve(fn _parent, %{user_id: user_id}, _context ->
+        dbg(user_id)
+
         {:ok, Starwebbie.Items.list_items_by_user_id(user_id: user_id)}
       end)
     end
 
     @desc "find all other items than those belonging to a logged in user"
     field :items_excluding_owned_by_user, list_of(non_null(:item)) do
-      # arg(:sort_by, :sort_by)
       middleware(StarwebbieWeb.Authentication)
 
       resolve(fn _parent, _, %{context: %{current_user: user}} ->

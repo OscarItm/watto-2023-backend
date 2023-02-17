@@ -152,7 +152,7 @@ defmodule Starwebbie.Users do
       )
       |> Ecto.Multi.update(
         :move_item,
-        item |> Item.changeset(%{user_id: buyer.id})
+        item |> Item.changeset(%{user_id: buyer.id, for_sale: false})
       )
       |> Repo.transaction()
       |> dbg()

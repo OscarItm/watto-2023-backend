@@ -222,6 +222,8 @@ defmodule Starwebbie.Items do
 
   """
   def list_items_by_user_id(user_id: user_id) do
+    dbg(user_id)
+
     from(i in Item,
       where: i.user_id == ^user_id,
       preload: [:type, :model, :user]
@@ -231,23 +233,19 @@ defmodule Starwebbie.Items do
 
   def list_items_except_from_user_id(user_id: user_id) do
     from(i in Item,
-      where: i.user_id != ^user_id,
+      where: i.user_id != ^user_id and i.for_sale == true,
       preload: [:type, :model, :user]
     )
     |> Repo.all()
   end
 
-  def list_items_except_from_user_id(user_id: user_id, sort_by: sort_by) do
-    from(i in Item,
-      where: i.user_id != ^user_id,
-      order_by: [desc: ^sort_by],
-      preload: [:type, :model, :user]
-    )
-    |> Repo.all()
-  end
-
-  # def sort_items_by_x(items, x) do
-  #   from
+  # def list_items_except_from_user_id(user_id: user_id, sort_by: sort_by) do
+  #   from(i in Item,
+  #     where: i.user_id != ^user_id,
+  #     order_by: [^sort_by],
+  #     preload: [:type, :model, :user]
+  #   )
+  #   |> Repo.all()
   # end
 
   def list_items do

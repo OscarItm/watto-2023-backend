@@ -42,10 +42,14 @@ models =
 
 items =
   for model <- models, type <- types do
-    Items.create_item(%{
-      name: "#{model.name} #{type.name}",
-      model_id: model.id,
-      type_id: type.id,
-      user_id: user.id
-    })
+    Items.create_item(
+      %{
+        name: "#{model.name} #{type.name}",
+        model_id: model.id,
+        type_id: type.id,
+        user_id: user.id,
+        for_sale: true
+      },
+      user_id: 1
+    )
   end
