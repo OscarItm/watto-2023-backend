@@ -65,6 +65,20 @@ defmodule StarwebbieWeb.Contexts.Item do
       middleware(&build_payload/2)
     end
 
+    @desc "makes item buyable"
+    field :item_sellable, :update_item_payload do
+      arg(:id, :integer)
+
+      resolve(fn _parent, %{id: id}, _context ->
+        case Starwebbie.Items.get_item(id) do
+          nil -> {:error, "Item not found"}
+          item -> {:ok, Starwebbie.Items.update_item(item, %{for_sale: true})}
+        end
+      end)
+
+      middleware(&build_payload/2)
+    end
+
     @desc "create a new item"
     field :item_create, :create_item_payload do
       arg(:name, non_null(:string))

@@ -104,8 +104,57 @@ defmodule StarwebbieWeb.Contexts.User do
                 # buy the item
                 case Starwebbie.Users.buy_item(buyer, seller, itemToChange) do
                   {:ok, result} ->
-                    dbg(result)
+                    {:ok,
+                     %{
+                       buyer: result.update_credits_buyer,
+                       seller: result.update_credits_seller,
 
+                       # result.move_item returns item pre_update so a query is needed to get the updated item
+                       item: result.move_item.id |> Starwebbie.Items.get_item()
+                     }}
+
+                  {:error, _} ->
+                    {:error, "You already own that item"}
+
+                  {:error, _, _, _} ->
+                    {:error, "failed to buy item"}
+                end
+            end
+        end
+      end)
+
+      middleware(&build_payload/2)
+    end
+
+    @desc "Buy an item from a user"
+    field :refund, :transaction_payload do
+      arg(:item_id, :integer)
+      middleware(StarwebbieWeb.Authentication)
+
+      resolve(fn _parent, %{item_id: item_id}, _ctx ->
+        # check if the item exists
+        case(Starwebbie.Items.get_item(item_id)) do
+          nil ->
+            {:error, "Item not found"}
+
+          item ->
+            itemToChange = item
+
+            # check if the user exists
+            case Starwebbie.Users.refund!(itemToChange.user_id) do
+              nil ->
+                {:error, "seller not found"}
+
+              seller ->
+                seller = seller
+
+                # buy the item
+                case Starwebbie.Users.refund(
+                       Starwebbie.Users.get_users!(1),
+                       seller,
+                       itemToChange
+                     ) do
+                  {:ok, result} ->
                     {:ok,
                      %{
                        buyer: result.update_credits_buyer,

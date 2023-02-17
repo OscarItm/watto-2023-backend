@@ -155,9 +155,43 @@ defmodule Starwebbie.Users do
         item |> Item.changeset(%{user_id: buyer.id, for_sale: false})
       )
       |> Repo.transaction()
-      |> dbg()
     else
       {:error, "you can't buy your own item"}
+    end
+  end
+
+  def refund(buyer, seller, item) do
+    # never give a full refund!!
+    price = item.type.index_price * item.model.multiplier * 0.75
+    negative_price = -price
+
+    if buyer.id != seller.id do
+      Ecto.Multi.new()
+      |> Ecto.Multi.run(
+        :check_credits,
+        fn _, _ ->
+          if buyer.credits >= price do
+            {:ok, :ok}
+          else
+            {:error, "not enough credits"}
+          end
+        end
+      )
+      |> Ecto.Multi.update(
+        :update_credits_seller,
+        seller |> User.changeset(%{credits: seller.credits + price})
+      )
+      |> Ecto.Multi.update(
+        :update_credits_buyer,
+        buyer |> User.changeset(%{credits: buyer.credits + negative_price})
+      )
+      |> Ecto.Multi.update(
+        :move_item,
+        item |> Item.changeset(%{user_id: buyer.id, for_sale: false})
+      )
+      |> Repo.transaction()
+    else
+      {:error, "silly watto, you cannot refund to yourself"}
     end
   end
 end
