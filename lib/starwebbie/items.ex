@@ -237,6 +237,19 @@ defmodule Starwebbie.Items do
     |> Repo.all()
   end
 
+  def list_items_except_from_user_id(user_id: user_id, sort_by: sort_by) do
+    from(i in Item,
+      where: i.user_id != ^user_id,
+      order_by: [desc: ^sort_by],
+      preload: [:type, :model, :user]
+    )
+    |> Repo.all()
+  end
+
+  # def sort_items_by_x(items, x) do
+  #   from
+  # end
+
   def list_items do
     Repo.all(Item) |> Repo.preload([:type, :model, :user])
   end
@@ -269,10 +282,11 @@ defmodule Starwebbie.Items do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_item(attrs \\ %{}) do
-    %Item{}
-    |> Item.changeset(attrs)
-    |> Repo.insert()
+  def create_item(attrs \\ %{}, user_id: user_id) do
+    # append user_id to attrs
+    attrs = Map.put(attrs, :user_id, user_id)
+
+    %Item{} |> Item.changeset(attrs) |> Repo.insert()
   end
 
   @doc """

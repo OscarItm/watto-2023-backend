@@ -35,7 +35,7 @@ defmodule StarwebbieWeb.Contexts.Item do
     field :items_by_user_id, list_of(non_null(:item)) do
       arg(:user_id, :integer)
 
-      # middleware(StarwebbieWeb.Authentication)
+      middleware(StarwebbieWeb.Authentication)
 
       resolve(fn _parent, %{user_id: user_id}, _context ->
         {:ok, Starwebbie.Items.list_items_by_user_id(user_id: user_id)}
@@ -44,10 +44,10 @@ defmodule StarwebbieWeb.Contexts.Item do
 
     @desc "find all other items than those belonging to a logged in user"
     field :items_excluding_owned_by_user, list_of(non_null(:item)) do
-      # middleware(StarwebbieWeb.Authentication)
+      # arg(:sort_by, :sort_by)
+      middleware(StarwebbieWeb.Authentication)
 
-      resolve(fn _parent, _args, %{context: %{current_user: user}} ->
-        dbg(user.id)
+      resolve(fn _parent, _, %{context: %{current_user: user}} ->
         {:ok, Starwebbie.Items.list_items_except_from_user_id(user_id: user.id)}
       end)
     end
@@ -69,7 +69,6 @@ defmodule StarwebbieWeb.Contexts.Item do
       arg(:name, non_null(:string))
       arg(:model_id, non_null(:integer))
       arg(:type_id, non_null(:integer))
-      arg(:user_id, non_null(:integer))
 
       middleware(StarwebbieWeb.Authentication)
       resolve(&create_item/3)
@@ -89,8 +88,8 @@ defmodule StarwebbieWeb.Contexts.Item do
     Starwebbie.Items.update_item(args)
   end
 
-  defp create_item(_parent, args, _context) do
-    Starwebbie.Items.create_item(args)
+  defp create_item(_parent, args, %{context: %{current_user: user}}) do
+    Starwebbie.Items.create_item(args, user_id: user.id)
   end
 
   defp delete_item(_parent, args, _context) do
