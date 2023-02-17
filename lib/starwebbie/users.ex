@@ -151,10 +151,11 @@ defmodule Starwebbie.Users do
         buyer |> User.changeset(%{credits: buyer.credits + negative_price})
       )
       |> Ecto.Multi.update(
-        :move_Item,
+        :move_item,
         item |> Item.changeset(%{user_id: buyer.id})
       )
       |> Repo.transaction()
+      |> dbg()
     else
       {:error, "you can't buy your own item"}
     end
