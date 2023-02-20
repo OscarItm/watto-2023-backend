@@ -1,7 +1,7 @@
 defmodule StarwebbieWeb.Schema do
   use Absinthe.Schema
   import AbsintheErrorPayload.Payload
-
+  alias Starwebbie.{Items, Users}
   import_types(StarwebbieWeb.Models)
 
   import_types(StarwebbieWeb.Contexts.Type)
@@ -19,14 +19,6 @@ defmodule StarwebbieWeb.Schema do
     import_fields(:model_queries)
     import_fields(:item_queries)
     import_fields(:user_queries)
-
-    field :hello, :string do
-      arg(:name, :string)
-
-      resolve(fn %{name: name}, _ ->
-        {:ok, "Hello #{name}"}
-      end)
-    end
   end
 
   mutation do
@@ -34,5 +26,22 @@ defmodule StarwebbieWeb.Schema do
     import_fields(:model_mutations)
     import_fields(:item_mutations)
     import_fields(:user_mutations)
+  end
+
+  @impl true
+  def context(ctx) do
+    loader =
+      Dataloader.new()
+      |> Dataloader.add_source(Users, Starwebbie.Users.data())
+      |> Dataloader.add_source(Items, Starwebbie.Items.data())
+
+    Map.put(ctx, :loader, loader)
+  end
+
+  @impl true
+  def plugins do
+    [
+      Absinthe.Middleware.Dataloader
+    ] ++ Absinthe.Plugin.defaults()
   end
 end

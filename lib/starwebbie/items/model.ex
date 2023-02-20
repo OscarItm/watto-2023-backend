@@ -5,6 +5,7 @@ defmodule Starwebbie.Items.Model do
   schema "models" do
     field :multiplier, :float
     field :name, :string
+    has_many :items, Starwebbie.Items.Item
 
     timestamps()
   end

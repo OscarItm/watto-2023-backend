@@ -5,6 +5,7 @@ defmodule Starwebbie.Items.Type do
   schema "types" do
     field :index_price, :integer
     field :name, :string
+    has_many :items, Starwebbie.Items.Item
 
     timestamps()
   end

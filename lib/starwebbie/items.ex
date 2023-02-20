@@ -8,6 +8,14 @@ defmodule Starwebbie.Items do
 
   alias Starwebbie.Items.Type
 
+  def data() do
+    Dataloader.Ecto.new(Starwebbie.Repo, query: &query/2)
+  end
+
+  def query(queryable, _params) do
+    queryable
+  end
+
   @doc """
   Returns the list of types.
 
