@@ -33,14 +33,12 @@ defmodule StarwebbieWeb.Contexts.Item do
 
     @desc "find items belonging to a user"
     field :items_by_user_id, list_of(non_null(:item)) do
-      arg(:user_id, :integer)
-
       middleware(StarwebbieWeb.Authentication)
 
-      resolve(fn _parent, %{user_id: user_id}, _context ->
-        dbg(user_id)
+      resolve(fn _parent, _, %{context: %{current_user: user}} ->
+        dbg(user.id)
 
-        {:ok, Starwebbie.Items.list_items_by_user_id(user_id: user_id)}
+        {:ok, Starwebbie.Items.list_items_by_user_id(user_id: user.id)}
       end)
     end
 
