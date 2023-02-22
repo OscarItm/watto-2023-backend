@@ -126,7 +126,7 @@ defmodule StarwebbieWeb.Contexts.User do
       middleware(&build_payload/2)
     end
 
-    @desc "Buy an item from a user"
+    @desc "Refund an item at a lower price to a user"
     field :refund, :transaction_payload do
       arg(:item_id, :integer)
       middleware(StarwebbieWeb.Authentication)
@@ -141,7 +141,7 @@ defmodule StarwebbieWeb.Contexts.User do
             itemToChange = item
 
             # check if the user exists
-            case Starwebbie.Users.refund!(itemToChange.user_id) do
+            case Starwebbie.Users.get_users!(itemToChange.user_id) do
               nil ->
                 {:error, "seller not found"}
 
